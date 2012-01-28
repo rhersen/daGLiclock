@@ -242,9 +242,9 @@ static void normalize(struct point2d *v) {
 }
 
 static void interpolate(struct point2d *r,
-			struct point2d *from,
-			struct point2d *to,
-			double interpolation)
+                        struct point2d *from,
+                        struct point2d *to,
+                        double interpolation)
 {
    double smooth_interpolation = smooth(interpolation);
    int i;
@@ -257,8 +257,8 @@ static void interpolate(struct point2d *r,
 }
 
 static void calc_bezier_points(struct bezier_point *r,
-			       int from_digit, int to_digit, double interpolation,
-			       int segment)
+                               int from_digit, int to_digit, double interpolation,
+                               int segment)
 {
    int step;
 
@@ -268,9 +268,9 @@ static void calc_bezier_points(struct bezier_point *r,
       struct point2d interpolated[NCTRL + 2];
 
       interpolate(interpolated,
-		  points[from_digit] + (NCTRL + 1) * segment,
-		  points[to_digit] + (NCTRL + 1) * segment,
-		  interpolation);
+                  points[from_digit] + (NCTRL + 1) * segment,
+                  points[to_digit] + (NCTRL + 1) * segment,
+                  interpolation);
 
       r[step].point = bezier(interpolated, t);
       struct point2d tangent = bezier_deriv(interpolated, t);
@@ -319,31 +319,31 @@ static void draw_digit(int from_digit, int to_digit, double interpolation)
 
       for (i = 0; i < steps - 1; i += 2)
       {
-	 int slice;
+         int slice;
 
-	 glBegin(GL_TRIANGLE_STRIP);
+         glBegin(GL_TRIANGLE_STRIP);
 
-	 for (slice = 0; slice < slices; slice++)
-	 {
-	    vertex(from_digit, to_digit, interpolation, i + 1, slice);
-	    vertex(from_digit, to_digit, interpolation, i, slice);
-	 }
+         for (slice = 0; slice < slices; slice++)
+         {
+            vertex(from_digit, to_digit, interpolation, i + 1, slice);
+            vertex(from_digit, to_digit, interpolation, i, slice);
+         }
 
-	 vertex(from_digit, to_digit, interpolation, i + 1, 0);
-	 vertex(from_digit, to_digit, interpolation, i, 0);
-	 glEnd();
+         vertex(from_digit, to_digit, interpolation, i + 1, 0);
+         vertex(from_digit, to_digit, interpolation, i, 0);
+         glEnd();
 
-	 glBegin(GL_TRIANGLE_STRIP);
+         glBegin(GL_TRIANGLE_STRIP);
 
-	 for (slice = 0; slice < slices; slice++)
-	 {
-	    vertex(from_digit, to_digit, interpolation, i + 2, slice);
-	    vertex(from_digit, to_digit, interpolation, i + 1, slice + 1);
-	 }
+         for (slice = 0; slice < slices; slice++)
+         {
+            vertex(from_digit, to_digit, interpolation, i + 2, slice);
+            vertex(from_digit, to_digit, interpolation, i + 1, slice + 1);
+         }
 
-	 vertex(from_digit, to_digit, interpolation, i + 2, 0);
-	 vertex(from_digit, to_digit, interpolation, i + 1, 1);
-	 glEnd();
+         vertex(from_digit, to_digit, interpolation, i + 2, 0);
+         vertex(from_digit, to_digit, interpolation, i + 1, 1);
+         glEnd();
       }
    }
 }
@@ -361,37 +361,37 @@ void parse_args(int argc, char **argv)
 
       if (strcmp(argv[2], "lowest") == 0)
       {
-	 slices = 2;
-	 return;
+         slices = 2;
+         return;
       }
       else if (strcmp(argv[2], "low") == 0)
       {
-	 slices = 4;
-	 return;
+         slices = 4;
+         return;
       }
       else if (strcmp(argv[2], "standard") == 0)
       {
-	 slices = 8;
-	 return;
+         slices = 8;
+         return;
       }
       else if (strcmp(argv[2], "high") == 0)
       {
-	 slices = 16;
-	 return;
+         slices = 16;
+         return;
       }
       else if (sscanf(argv[2], "%d", &q) == 1)
       {
-	 slices = q;
-	 return;
+         slices = q;
+         return;
       }
    }
 
    fprintf(stderr,
-	   "usage: %s [-q <quality>]\n"
-	   "where quality is an integer >= 2 or any of the aliases\n"
-	   "lowest, low, standard or high, which are translated to\n"
-	   "2, 4, 8 and 16, respectively.\n",
-	   argv[0]);
+           "usage: %s [-q <quality>]\n"
+           "where quality is an integer >= 2 or any of the aliases\n"
+           "lowest, low, standard or high, which are translated to\n"
+           "2, 4, 8 and 16, respectively.\n",
+           argv[0]);
 
    exit(1);
 }
@@ -423,13 +423,13 @@ int main(int argc, char **argv)
 
    SDL_WM_SetCaption("Dali Clock", NULL);
    glViewport(0, 0, width, height);
-   glClearDepth(1.0);		// Enables Clearing Of The Depth Buffer
-   glDepthFunc(GL_LESS);	// The Type Of Depth Test To Do
-   glEnable(GL_DEPTH_TEST);	// Enables Depth Testing
+   glClearDepth(1.0);           // Enables Clearing Of The Depth Buffer
+   glDepthFunc(GL_LESS);        // The Type Of Depth Test To Do
+   glEnable(GL_DEPTH_TEST);     // Enables Depth Testing
    glEnable(GL_CULL_FACE);
-   glShadeModel(GL_SMOOTH);	// Enables Smooth Color Shading
+   glShadeModel(GL_SMOOTH);     // Enables Smooth Color Shading
    glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();		// reset The Projection Matrix
+   glLoadIdentity();            // reset The Projection Matrix
    set_aspect(1.0 * width / height);
    glMatrixMode(GL_MODELVIEW);
 
@@ -501,74 +501,74 @@ int main(int argc, char **argv)
 
       if (gettimeofday(&t, 0) == 0)
       {
-	 int new = t.tv_sec % 10;
+         int new = t.tv_sec % 10;
 
-	 if (new != to[0])
-	 {
-	    time_t timep = time(0);
-	    struct tm *tm = localtime(&timep);
-	    from[0] = to[0];
-	    to[0] = new;
-	    from[1] = to[1];
-	    to[1] = tm->tm_sec / 10;
-	    from[2] = to[2];
-	    to[2] = tm->tm_min % 10;
-	    from[3] = to[3];
-	    to[3] = tm->tm_min / 10;
-	    from[4] = to[4];
-	    to[4] = tm->tm_hour % 10;
-	    from[5] = to[5];
-	    to[5] = tm->tm_hour / 10;
+         if (new != to[0])
+         {
+            time_t timep = time(0);
+            struct tm *tm = localtime(&timep);
+            from[0] = to[0];
+            to[0] = new;
+            from[1] = to[1];
+            to[1] = tm->tm_sec / 10;
+            from[2] = to[2];
+            to[2] = tm->tm_min % 10;
+            from[3] = to[3];
+            to[3] = tm->tm_min / 10;
+            from[4] = to[4];
+            to[4] = tm->tm_hour % 10;
+            from[5] = to[5];
+            to[5] = tm->tm_hour / 10;
 
-	    printf("%d fps\n", framecount);
-	    framecount = 0;
-	 }
+            printf("%d fps\n", framecount);
+            framecount = 0;
+         }
 
-	 interpolation = t.tv_usec / 1e6;
+         interpolation = t.tv_usec / 1e6;
       }
 
       for (pos = 0; pos < 6; pos++)
       {
-	 glPushMatrix();
+         glPushMatrix();
 
-	 glTranslatef(7.5 - 3 * pos, 0, 0);
+         glTranslatef(7.5 - 3 * pos, 0, 0);
 
-	 if (from[pos] == to[pos])
-	 {
-	    glCallList(lists + from[pos]);
-	 }
-	 else
-	 {
-	    draw_digit(from[pos], to[pos], interpolation);
-	 }
+         if (from[pos] == to[pos])
+         {
+            glCallList(lists + from[pos]);
+         }
+         else
+         {
+            draw_digit(from[pos], to[pos], interpolation);
+         }
 
-	 glPopMatrix();
+         glPopMatrix();
       }
 
       SDL_GL_SwapBuffers();
       while (SDL_PollEvent(&event))
       {
-	 if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-	 {
-	    SDL_Quit();
-	    return 0;
-	 }
-	 else if (event.type == SDL_MOUSEBUTTONDOWN)
-	 {
-	    spin_speed = 0;
-	 }
-	 else if (event.type == SDL_MOUSEMOTION)
-	 {
-	    if (event.motion.state == (SDL_BUTTON(1) | SDL_BUTTON(3))) {
-	       camera.z += event.motion.yrel / 16.0;
-	    } else if (event.motion.state & SDL_BUTTON(1)) {
-	       spin_speed += event.motion.xrel / 256.0;
-	    } else if (event.motion.state & SDL_BUTTON(3)) {
-	       camera.roty += event.motion.xrel / 4.0;
-	       camera.rotx += event.motion.yrel / 4.0;
-	    }
+         if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+         {
+            SDL_Quit();
+            return 0;
+         }
+         else if (event.type == SDL_MOUSEBUTTONDOWN)
+         {
+            spin_speed = 0;
+         }
+         else if (event.type == SDL_MOUSEMOTION)
+         {
+            if (event.motion.state == (SDL_BUTTON(1) | SDL_BUTTON(3))) {
+               camera.z += event.motion.yrel / 16.0;
+            } else if (event.motion.state & SDL_BUTTON(1)) {
+               spin_speed += event.motion.xrel / 256.0;
+            } else if (event.motion.state & SDL_BUTTON(3)) {
+               camera.roty += event.motion.xrel / 4.0;
+               camera.rotx += event.motion.yrel / 4.0;
+            }
 
-	 }
+         }
       }
 
       SDL_Delay(1);
