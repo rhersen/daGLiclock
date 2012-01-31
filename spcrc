@@ -1,0 +1,4 @@
+#  HTML COLOR NAME   COL A N T STRING or REGULAR EXPRESSION
+#################### ### # # # ################################################################
+Green                grn       (^.*passed$)
+Red                  red       (^.*FAILED$)

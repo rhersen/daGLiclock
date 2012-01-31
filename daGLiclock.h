@@ -1,3 +1,5 @@
+#include <GL/gl.h>
+
 struct point2d {
     double x, y;
 };

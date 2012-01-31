@@ -6,8 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <GL/gl.h>
+#include <string.h>
 
 #include "daGLiclock.h"
 
