@@ -1,4 +1,5 @@
 #include <time.h>
+#include <sys/time.h>
 #include <GL/gl.h>
 #include "SDL.h"
 #include "daGLiclock.h"
