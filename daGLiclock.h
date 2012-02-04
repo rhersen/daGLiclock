@@ -13,10 +13,6 @@ struct bezier_point {
     struct point2d normal;
 };
 
-extern int steps;
-
-extern struct bezier_point *bezier_points;
-
 int parse_args(int argc, char **argv);
 void set_aspect(GLdouble aspect);
 void draw_digit(int from_digit, int to_digit, double interpolation, int slices);

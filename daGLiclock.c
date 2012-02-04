@@ -136,15 +136,11 @@ static struct point2d points[][NPOINTS] = {
     }
 };
 
-int steps;
-double fatness = 0.2;
-
-struct bezier_point *bezier_points;
-
 void draw_digit(int from_digit, int to_digit, double interpolation, int slices) {
-    void calc_bezier_points(struct bezier_point *r,
-                            int from_digit, int to_digit, double interpolation,
-                            int segment) {
+    int steps = 4 * slices;
+
+    struct bezier_point *calc_bezier_points(int from_digit, int to_digit, double interpolation,
+                                            int segment) {
         double bernstein(int i, int n, double t) {
             int binom(int n, int i) {
                 int factorial(int n) {
@@ -168,9 +164,8 @@ void draw_digit(int from_digit, int to_digit, double interpolation, int slices) 
 
         struct point2d bezier(struct point2d ctrl_points[], double t) {
             struct point2d r = {0};
-            int i;
 
-            for (i = 0; i < NCTRL + 2; i++) {
+            for (int i = 0; i < NCTRL + 2; i++) {
                 double bt = bernstein(i, NCTRL + 1, t);
                 r.x += ctrl_points[i].x * bt;
                 r.y += ctrl_points[i].y * bt;
@@ -181,9 +176,8 @@ void draw_digit(int from_digit, int to_digit, double interpolation, int slices) 
 
         struct point2d bezier_deriv(struct point2d ctrl_points[], double t) {
             struct point2d r = {0};
-            int i;
 
-            for (i = 0; i < NCTRL + 2; i++) {
+            for (int i = 0; i < NCTRL + 2; i++) {
                 double d = (NCTRL + 1) * (bernstein(i - 1, NCTRL, t) - bernstein(i, NCTRL, t));
                 r.x += ctrl_points[i].x * d;
                 r.y += ctrl_points[i].y * d;
@@ -207,17 +201,16 @@ void draw_digit(int from_digit, int to_digit, double interpolation, int slices) 
             }
 
             double smooth_interpolation = smooth(interpolation);
-            int i;
 
-            for (i = 0; i < NCTRL + 2; i++) {
+            for (int i = 0; i < NCTRL + 2; i++) {
                 r[i].x = from[i].x * (1 - smooth_interpolation) + to[i].x * smooth_interpolation;
                 r[i].y = from[i].y * (1 - smooth_interpolation) + to[i].y * smooth_interpolation;
             }
         }
 
-        int step;
+        struct bezier_point *r = malloc((1 + steps) * sizeof(struct bezier_point));
 
-        for (step = 0; step <= steps; step++) {
+        for (int step = 0; step <= steps; step++) {
             double t = 1.0 * step / steps;
             struct point2d interpolated[NCTRL + 2];
 
@@ -233,11 +226,14 @@ void draw_digit(int from_digit, int to_digit, double interpolation, int slices) 
 
             normalize(&r[step].normal);
         }
+
+        return r;
     }
 
-    void vertex(int from_digit, int to_digit, double interpolation, int step, int slice) {
+    void vertex(struct bezier_point *bezier_points, int from_digit, int to_digit, double interpolation, int step, int slice) {
         struct point3d normal;
         double x, y, z;
+        double fatness = 0.3;
 
         if (step % 2) {
             normal.x = bezier_points[step].normal.x * sin(2 * M_PI * (slice - 0.5) / slices);
@@ -257,38 +253,34 @@ void draw_digit(int from_digit, int to_digit, double interpolation, int slices) 
         glVertex3d(bezier_points[step].point.x + x, bezier_points[step].point.y + y, z);
     }
 
-    int segment;
+    for (int segment = 0; segment < 3; segment++) {
+        struct bezier_point *bezier_points = calc_bezier_points(from_digit, to_digit, interpolation, segment);
 
-    for (segment = 0; segment < 3; segment++) {
-        int i;
-
-        calc_bezier_points(bezier_points, from_digit, to_digit, interpolation, segment);
-
-        for (i = 0; i < steps - 1; i += 2) {
-            int slice;
-
+        for (int i = 0; i < steps - 1; i += 2) {
             glBegin(GL_TRIANGLE_STRIP);
 
-            for (slice = 0; slice < slices; slice++) {
-                vertex(from_digit, to_digit, interpolation, i + 1, slice);
-                vertex(from_digit, to_digit, interpolation, i, slice);
+            for (int slice = 0; slice < slices; slice++) {
+                vertex(bezier_points, from_digit, to_digit, interpolation, i + 1, slice);
+                vertex(bezier_points, from_digit, to_digit, interpolation, i, slice);
             }
 
-            vertex(from_digit, to_digit, interpolation, i + 1, 0);
-            vertex(from_digit, to_digit, interpolation, i, 0);
+            vertex(bezier_points, from_digit, to_digit, interpolation, i + 1, 0);
+            vertex(bezier_points, from_digit, to_digit, interpolation, i, 0);
             glEnd();
 
             glBegin(GL_TRIANGLE_STRIP);
 
-            for (slice = 0; slice < slices; slice++) {
-                vertex(from_digit, to_digit, interpolation, i + 2, slice);
-                vertex(from_digit, to_digit, interpolation, i + 1, slice + 1);
+            for (int slice = 0; slice < slices; slice++) {
+                vertex(bezier_points, from_digit, to_digit, interpolation, i + 2, slice);
+                vertex(bezier_points, from_digit, to_digit, interpolation, i + 1, slice + 1);
             }
 
-            vertex(from_digit, to_digit, interpolation, i + 2, 0);
-            vertex(from_digit, to_digit, interpolation, i + 1, 1);
+            vertex(bezier_points, from_digit, to_digit, interpolation, i + 2, 0);
+            vertex(bezier_points, from_digit, to_digit, interpolation, i + 1, 1);
             glEnd();
         }
+
+        free(bezier_points);
     }
 }
 

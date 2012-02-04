@@ -1,4 +1,4 @@
-CC = gcc -O -Wall
+CC = gcc -std=gnu99 -O -Wall
 
 .PHONY : test
 
