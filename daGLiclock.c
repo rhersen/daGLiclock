@@ -136,13 +136,12 @@ static struct point2d points[][NPOINTS] = {
     }
 };
 
-int slices = 8;
 int steps;
 double fatness = 0.2;
 
 struct bezier_point *bezier_points;
 
-void draw_digit(int from_digit, int to_digit, double interpolation) {
+void draw_digit(int from_digit, int to_digit, double interpolation, int slices) {
     void calc_bezier_points(struct bezier_point *r,
                             int from_digit, int to_digit, double interpolation,
                             int segment) {
@@ -293,40 +292,28 @@ void draw_digit(int from_digit, int to_digit, double interpolation) {
     }
 }
 
-void parse_args(int argc, char **argv) {
+int parse_args(int argc, char **argv) {
     if (argc == 1) {
-        return;
+        return 8;
     }
 
     if (argc == 3 && strcmp(argv[1], "-q") == 0) {
         int q;
 
         if (strcmp(argv[2], "lowest") == 0) {
-            slices = 2;
-            return;
+            return 2;
         } else if (strcmp(argv[2], "low") == 0) {
-            slices = 4;
-            return;
+            return 4;
         } else if (strcmp(argv[2], "standard") == 0) {
-            slices = 8;
-            return;
+            return 8;
         } else if (strcmp(argv[2], "high") == 0) {
-            slices = 16;
-            return;
+            return 16;
         } else if (sscanf(argv[2], "%d", &q) == 1) {
-            slices = q;
-            return;
+            return q;
         }
     }
 
-    fprintf(stderr,
-            "usage: %s [-q <quality>]\n"
-            "where quality is an integer >= 2 or any of the aliases\n"
-            "lowest, low, standard or high, which are translated to\n"
-            "2, 4, 8 and 16, respectively.\n",
-            argv[0]);
-
-    exit(1);
+    return -1;
 }
 
 void set_aspect(GLdouble aspect) {

@@ -21,7 +21,18 @@ int main(int argc, char **argv)
     int from[6] = {0};
     int to[6] = {0};
 
-    parse_args(argc, argv);
+    int slices = parse_args(argc, argv);
+
+    if (slices < 0) {
+        fprintf(stderr,
+                "usage: %s [-q <quality>]\n"
+                "where quality is an integer >= 2 or any of the aliases\n"
+                "lowest, low, standard or high, which are translated to\n"
+                "2, 4, 8 and 16, respectively.\n",
+                argv[0]);
+
+        exit(1);
+    }
 
     steps = 4 * slices;
 
@@ -87,7 +98,7 @@ int main(int argc, char **argv)
 
     for (i = 0; i < 10; i++) {
         glNewList(lists + i, GL_COMPILE);
-        draw_digit(i, i, 0);
+        draw_digit(i, i, 0, slices);
         glEndList();
     }
 
@@ -140,7 +151,7 @@ int main(int argc, char **argv)
             if (from[pos] == to[pos]) {
                 glCallList(lists + from[pos]);
             } else {
-                draw_digit(from[pos], to[pos], interpolation);
+                draw_digit(from[pos], to[pos], interpolation, slices);
             }
 
             glPopMatrix();
